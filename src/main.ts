@@ -11,7 +11,7 @@ const rl = readline.createInterface({
 });
 
 console.log("Trafik Işığı Simülasyonu");
-console.log("Komutlar: kuzey | guney | dogu | bati | durum | tick | cikis");
+console.log("Komutlar: kuzey | guney | dogu | bati | durum | olay | tick | cikis");
 console.log("");
 
 function durumYaz(): void {
@@ -40,11 +40,15 @@ function prompt(): void {
       durumYaz();
     } else if (komut === "durum") {
       durumYaz();
+    } else if (komut === "olay") {
+      const olaylar = sim.anlik().olaylar.slice(0, 8);
+      if (olaylar.length === 0) console.log("Henüz olay yok.");
+      else for (const o of olaylar) console.log(`  ${o.mesaj}`);
     } else if (komut === "tick" || komut === "") {
       for (let i = 0; i < 10; i++) sim.adim(0.2);
       durumYaz();
     } else {
-      console.log("Bilinmeyen komut. Örnek: kuzey, durum, tick, cikis");
+      console.log("Bilinmeyen komut. Örnek: kuzey, durum, olay, tick, cikis");
     }
 
     prompt();

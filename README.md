@@ -2,7 +2,7 @@
 
 Dört yönlü kavşakta trafik ışığı ve araç kuyruklarını terminal üzerinden yöneten bir TypeScript simülasyonu.
 
-Kuyruk yoğunluğuna göre yeşil ışık süresi değişir: az araçta sabit zamanlama, yoğunlukta uyarlanabilir zamanlama kullanılır.
+Kuyruk yoğunluğuna göre yeşil ışık süresi değişir. Işık renk değişimleri olay günlüğüne yazılır.
 
 ## Çalıştırma
 
@@ -21,6 +21,7 @@ npm test
 |--------|----------|
 | `kuzey` `guney` `dogu` `bati` | O yöne araç ekle |
 | `durum` | Işıklar, kuyruklar ve aktif strateji |
+| `olay` | Son ışık değişim olayları |
 | `tick` | Simülasyonu ilerlet |
 | `cikis` | Çık |
 
@@ -30,4 +31,5 @@ npm test
 |--------|--------|
 | Simülasyon | `src/domain/` |
 | Zamanlama stratejileri | `src/patterns/strategy/` |
+| Olay günlüğü | `src/patterns/observer/` |
 | Terminal arayüzü | `src/main.ts` |

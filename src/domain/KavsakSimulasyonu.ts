@@ -1,23 +1,30 @@
 import { SabitZamanlama } from "../patterns/strategy/SabitZamanlama";
 import { UyarlanabilirZamanlama } from "../patterns/strategy/UyarlanabilirZamanlama";
 import type { ZamanlamaStratejisi } from "../patterns/strategy/ZamanlamaStratejisi";
+import { OlayGunlugu } from "../patterns/observer/OlayGunlugu";
 import { aracOlustur, type Arac } from "./Arac";
+import type { IsikRengi } from "./IsikRengi";
 import { TrafikIsigi } from "./TrafikIsigi";
 import { FAZ_CIFTLERI, YONLER, type Yon } from "./Yon";
 
 export class KavsakSimulasyonu {
   isiklar = new Map<Yon, TrafikIsigi>();
   kuyruklar = new Map<Yon, Arac[]>();
+  olayGunlugu = new OlayGunlugu();
 
   private strateji: ZamanlamaStratejisi = new SabitZamanlama();
   private fazIndeksi = 0;
   private fazZamanlayici = 0;
+  private zaman = 0;
   private gecen = 0;
+  private oncekiRenk = new Map<Yon, IsikRengi>();
 
   constructor() {
     for (const yon of YONLER) {
-      this.isiklar.set(yon, new TrafikIsigi(yon));
+      const isik = new TrafikIsigi(yon);
+      this.isiklar.set(yon, isik);
       this.kuyruklar.set(yon, []);
+      this.oncekiRenk.set(yon, isik.renk);
     }
     this.fazBaslat();
   }
@@ -31,6 +38,7 @@ export class KavsakSimulasyonu {
   }
 
   adim(dt: number): void {
+    this.zaman += dt;
     this.fazZamanlayici += dt;
     this.fazGuncelle();
 
@@ -40,6 +48,11 @@ export class KavsakSimulasyonu {
       isik.yesilSuresi = this.strateji.yesilSuresi(kuyruk);
       isik.sariSuresi = this.strateji.sariSuresi();
       isik.guncelle(dt);
+
+      if (isik.renk !== this.oncekiRenk.get(yon)) {
+        this.olayGunlugu.kaydet(yon, this.oncekiRenk.get(yon)!, isik.renk, this.zaman);
+        this.oncekiRenk.set(yon, isik.renk);
+      }
 
       const k = this.kuyruklar.get(yon)!;
       if (k.length === 0) continue;
@@ -72,6 +85,7 @@ export class KavsakSimulasyonu {
       renkler,
       kuyruklar,
       gecen: this.gecen,
+      olaylar: this.olayGunlugu.olaylar,
     };
   }
 
