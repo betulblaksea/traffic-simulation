@@ -17,7 +17,7 @@ console.log("");
 function durumYaz(): void {
   const s = sim.anlik();
   const [a, b] = s.faz.split("-") as Yon[];
-  console.log(`Faz: ${YON_ETIKET[a!]} – ${YON_ETIKET[b!]} | Geçen: ${s.gecen}`);
+  console.log(`Faz: ${YON_ETIKET[a!]} – ${YON_ETIKET[b!]} | Strateji: ${s.strateji} | Geçen: ${s.gecen}`);
   for (const yon of YONLER) {
     console.log(
       `  ${YON_ETIKET[yon]}: ${RENK_ETIKET[s.renkler[yon] as IsikRengi]} · kuyruk ${s.kuyruklar[yon]}`,
