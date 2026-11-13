@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { KavsakSimulasyonu } from "./KavsakSimulasyonu";
+import { KavsakArayuzu } from "../patterns/facade/KavsakArayuzu";
 
 describe("KavsakSimulasyonu", () => {
   it("araç eklenir", () => {
@@ -19,7 +20,16 @@ describe("KavsakSimulasyonu", () => {
     const sim = new KavsakSimulasyonu();
     sim.aracEkle("kuzey");
     sim.aracEkle("guney");
-    for (let i = 0; i < 100; i++) sim.adim(0.2);
+    sim.ilerlet(100);
     expect(sim.anlik().gecen).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe("KavsakArayuzu", () => {
+  it("durum satırları üretir", () => {
+    const arayuz = new KavsakArayuzu();
+    const satirlar = arayuz.durumSatirlari();
+    expect(satirlar.length).toBeGreaterThanOrEqual(5);
+    expect(satirlar[0]).toContain("Strateji:");
   });
 });

@@ -8,10 +8,9 @@ import { TrafikIsigi } from "./TrafikIsigi";
 import { FAZ_CIFTLERI, YONLER, type Yon } from "./Yon";
 
 export class KavsakSimulasyonu {
-  isiklar = new Map<Yon, TrafikIsigi>();
-  kuyruklar = new Map<Yon, Arac[]>();
-  olayGunlugu = new OlayGunlugu();
-
+  private isiklar = new Map<Yon, TrafikIsigi>();
+  private kuyruklar = new Map<Yon, Arac[]>();
+  private olayGunlugu = new OlayGunlugu();
   private strateji: ZamanlamaStratejisi = new SabitZamanlama();
   private fazIndeksi = 0;
   private fazZamanlayici = 0;
@@ -70,6 +69,10 @@ export class KavsakSimulasyonu {
         this.gecen += 1;
       }
     }
+  }
+
+  ilerlet(adet: number, dt = 0.2): void {
+    for (let i = 0; i < adet; i++) this.adim(dt);
   }
 
   anlik() {

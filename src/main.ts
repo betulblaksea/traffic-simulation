@@ -1,9 +1,7 @@
 import * as readline from "node:readline";
-import { KavsakSimulasyonu } from "./domain/KavsakSimulasyonu";
-import { RENK_ETIKET, type IsikRengi } from "./domain/IsikRengi";
-import { YON_ETIKET, YONLER, type Yon } from "./domain/Yon";
+import { KavsakArayuzu } from "./patterns/facade/KavsakArayuzu";
 
-const sim = new KavsakSimulasyonu();
+const kavsak = new KavsakArayuzu();
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -15,14 +13,7 @@ console.log("Komutlar: kuzey | guney | dogu | bati | durum | olay | tick | cikis
 console.log("");
 
 function durumYaz(): void {
-  const s = sim.anlik();
-  const [a, b] = s.faz.split("-") as Yon[];
-  console.log(`Faz: ${YON_ETIKET[a!]} – ${YON_ETIKET[b!]} | Strateji: ${s.strateji} | Geçen: ${s.gecen}`);
-  for (const yon of YONLER) {
-    console.log(
-      `  ${YON_ETIKET[yon]}: ${RENK_ETIKET[s.renkler[yon] as IsikRengi]} · kuyruk ${s.kuyruklar[yon]}`,
-    );
-  }
+  for (const satir of kavsak.durumSatirlari()) console.log(satir);
 }
 
 function prompt(): void {
@@ -34,18 +25,18 @@ function prompt(): void {
       return;
     }
 
-    if (YONLER.includes(komut as Yon)) {
-      sim.aracEkle(komut as Yon);
-      console.log(`${YON_ETIKET[komut as Yon]} yönüne araç eklendi.`);
+    if (kavsak.yonGecerli(komut)) {
+      kavsak.aracEkle(komut);
+      console.log(`${kavsak.yonEtiket(komut)} yönüne araç eklendi.`);
       durumYaz();
     } else if (komut === "durum") {
       durumYaz();
     } else if (komut === "olay") {
-      const olaylar = sim.anlik().olaylar.slice(0, 8);
+      const olaylar = kavsak.olayMesajlari();
       if (olaylar.length === 0) console.log("Henüz olay yok.");
-      else for (const o of olaylar) console.log(`  ${o.mesaj}`);
+      else for (const mesaj of olaylar) console.log(`  ${mesaj}`);
     } else if (komut === "tick" || komut === "") {
-      for (let i = 0; i < 10; i++) sim.adim(0.2);
+      kavsak.ilerlet(10);
       durumYaz();
     } else {
       console.log("Bilinmeyen komut. Örnek: kuzey, durum, olay, tick, cikis");
