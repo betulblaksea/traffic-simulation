@@ -2,7 +2,7 @@
 
 Dört yönlü kavşakta trafik ışığı ve araç kuyruklarını terminal üzerinden yöneten bir TypeScript simülasyonu.
 
-Kuyruk yoğunluğuna göre yeşil ışık süresi değişir. Her ışık kırmızı, sarı ve yeşil durumları arasında geçer. Işık renk değişimleri olay günlüğüne yazılır. Terminal yalnızca `KavsakArayuzu` üzerinden çalışır; ışıklar, kuyruklar, zamanlama ve olaylar bu arayüzün arkasında toplanır.
+Araçlar fabrika ile üretilir. Kuyruk yoğunluğuna göre yeşil ışık süresi değişir. Her ışık kırmızı, sarı ve yeşil durumları arasında geçer. Işık renk değişimleri olay günlüğüne yazılır. Terminal yalnızca `KavsakArayuzu` üzerinden çalışır; ışıklar, kuyruklar, zamanlama ve olaylar bu arayüzün arkasında toplanır.
 
 ## Çalıştırma
 
@@ -34,4 +34,5 @@ npm test
 | Olay günlüğü | `src/patterns/observer/` |
 | Kavşak arayüzü | `src/patterns/facade/` |
 | Işık durumları | `src/patterns/state/` |
+| Araç fabrikası | `src/patterns/factory/` |
 | Terminal arayüzü | `src/main.ts` |

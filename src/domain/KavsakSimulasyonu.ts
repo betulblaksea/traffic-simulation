@@ -1,8 +1,10 @@
+import type { Arac } from "../patterns/factory/Arac";
+import type { AracFabrikasi } from "../patterns/factory/AracFabrikasi";
+import { BasitAracFabrikasi } from "../patterns/factory/BasitAracFabrikasi";
+import { OlayGunlugu } from "../patterns/observer/OlayGunlugu";
 import { SabitZamanlama } from "../patterns/strategy/SabitZamanlama";
 import { UyarlanabilirZamanlama } from "../patterns/strategy/UyarlanabilirZamanlama";
 import type { ZamanlamaStratejisi } from "../patterns/strategy/ZamanlamaStratejisi";
-import { OlayGunlugu } from "../patterns/observer/OlayGunlugu";
-import { aracOlustur, type Arac } from "./Arac";
 import type { IsikRengi } from "./IsikRengi";
 import { TrafikIsigi } from "./TrafikIsigi";
 import { FAZ_CIFTLERI, YONLER, type Yon } from "./Yon";
@@ -11,6 +13,7 @@ export class KavsakSimulasyonu {
   private isiklar = new Map<Yon, TrafikIsigi>();
   private kuyruklar = new Map<Yon, Arac[]>();
   private olayGunlugu = new OlayGunlugu();
+  private fabrika: AracFabrikasi;
   private strateji: ZamanlamaStratejisi = new SabitZamanlama();
   private fazIndeksi = 0;
   private fazZamanlayici = 0;
@@ -18,7 +21,8 @@ export class KavsakSimulasyonu {
   private gecen = 0;
   private oncekiRenk = new Map<Yon, IsikRengi>();
 
-  constructor() {
+  constructor(fabrika: AracFabrikasi = new BasitAracFabrikasi()) {
+    this.fabrika = fabrika;
     for (const yon of YONLER) {
       const isik = new TrafikIsigi(yon);
       this.isiklar.set(yon, isik);
@@ -31,7 +35,7 @@ export class KavsakSimulasyonu {
   aracEkle(yon: Yon): void {
     const k = this.kuyruklar.get(yon)!;
     if (k.length >= 6) return;
-    k.push(aracOlustur(yon));
+    k.push(this.fabrika.olustur(yon));
     const yogun = YONLER.some((y) => this.kuyruklar.get(y)!.length >= 3);
     this.strateji = yogun ? new UyarlanabilirZamanlama() : new SabitZamanlama();
   }
