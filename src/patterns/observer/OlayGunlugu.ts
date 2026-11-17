@@ -1,11 +1,12 @@
 import { RENK_ETIKET, type IsikRengi } from "../../domain/IsikRengi";
 import { YON_ETIKET, type Yon } from "../../domain/Yon";
+import type { IsikGozlemcisi } from "./IsikGozlemcisi";
 import type { SimOlayi } from "./SimOlayi";
 
-export class OlayGunlugu {
+export class OlayGunlugu implements IsikGozlemcisi {
   olaylar: SimOlayi[] = [];
 
-  kaydet(yon: Yon, onceki: IsikRengi, sonraki: IsikRengi, zaman: number): void {
+  isikDegisti(yon: Yon, onceki: IsikRengi, sonraki: IsikRengi, zaman: number): void {
     this.olaylar.unshift({
       zaman,
       mesaj: `${YON_ETIKET[yon]}: ${RENK_ETIKET[onceki]} → ${RENK_ETIKET[sonraki]}`,

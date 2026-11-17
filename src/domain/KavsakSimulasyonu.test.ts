@@ -33,3 +33,11 @@ describe("KavsakArayuzu", () => {
     expect(satirlar[0]).toContain("Strateji:");
   });
 });
+
+describe("Observer", () => {
+  it("ışık değişiminde olay üretir", () => {
+    const sim = new KavsakSimulasyonu();
+    sim.ilerlet(40);
+    expect(sim.anlik().olaylar.length).toBeGreaterThan(0);
+  });
+});
