@@ -9,10 +9,11 @@ import { TrafikIsigi } from "./TrafikIsigi";
 import { FAZ_CIFTLERI, YONLER, type Yon } from "./Yon";
 
 export class KavsakSimulasyonu {
-  private isiklar = new Map<Yon, TrafikIsigi>();
-  private kuyruklar = new Map<Yon, Arac[]>();
-  private olayGunlugu = new OlayGunlugu();
-  private fabrika: AracFabrikasi;
+  isiklar = new Map<Yon, TrafikIsigi>();
+  kuyruklar = new Map<Yon, Arac[]>();
+  olayGunlugu = new OlayGunlugu();
+  fabrika: AracFabrikasi;
+
   private strateji: ZamanlamaStratejisi = new SabitZamanlama();
   private fazIndeksi = 0;
   private fazZamanlayici = 0;
@@ -22,7 +23,7 @@ export class KavsakSimulasyonu {
   constructor(fabrika: AracFabrikasi = new BasitAracFabrikasi()) {
     this.fabrika = fabrika;
     for (const yon of YONLER) {
-      const isik = new TrafikIsigi(yon);
+      const isik = new TrafikIsigi(yon, this.strateji);
       isik.ekle(this.olayGunlugu);
       this.isiklar.set(yon, isik);
       this.kuyruklar.set(yon, []);
@@ -36,6 +37,7 @@ export class KavsakSimulasyonu {
     k.push(this.fabrika.olustur(yon));
     const yogun = YONLER.some((y) => this.kuyruklar.get(y)!.length >= 3);
     this.strateji = yogun ? new UyarlanabilirZamanlama() : new SabitZamanlama();
+    for (const isik of this.isiklar.values()) isik.zamanlama = this.strateji;
   }
 
   adim(dt: number): void {
@@ -45,9 +47,7 @@ export class KavsakSimulasyonu {
 
     for (const yon of YONLER) {
       const isik = this.isiklar.get(yon)!;
-      const kuyruk = this.kuyruklar.get(yon)!.length;
-      isik.yesilSuresi = this.strateji.yesilSuresi(kuyruk);
-      isik.sariSuresi = this.strateji.sariSuresi();
+      isik.kuyrukBoyutu = this.kuyruklar.get(yon)!.length;
       isik.guncelle(dt, this.zaman);
 
       const k = this.kuyruklar.get(yon)!;
@@ -68,10 +68,6 @@ export class KavsakSimulasyonu {
     }
   }
 
-  ilerlet(adet: number, dt = 0.2): void {
-    for (let i = 0; i < adet; i++) this.adim(dt);
-  }
-
   anlik() {
     const renkler: Record<string, string> = {};
     const kuyruklar: Record<string, number> = {};
@@ -81,11 +77,11 @@ export class KavsakSimulasyonu {
     }
     return {
       faz: FAZ_CIFTLERI[this.fazIndeksi]!.join("-"),
-      strateji: this.strateji.ad,
       renkler,
       kuyruklar,
       gecen: this.gecen,
       olaylar: this.olayGunlugu.olaylar,
+      araclar: YONLER.flatMap((y) => this.kuyruklar.get(y)!),
     };
   }
 

@@ -1,4 +1,7 @@
 node_modules
 dist
+out
+docs
 .DS_Store
 *.local
+.vscode

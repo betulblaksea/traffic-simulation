@@ -1,50 +1,46 @@
-import * as readline from "node:readline";
+import { RENK_ETIKET, type IsikRengi } from "./domain/IsikRengi";
+import { YON_ETIKET, type Yon } from "./domain/Yon";
 import { KavsakArayuzu } from "./patterns/facade/KavsakArayuzu";
+import { KavsakSahnesi } from "./view/KavsakSahnesi";
+
+const canvas = document.querySelector<HTMLCanvasElement>("#scene")!;
+const durumEl = document.querySelector<HTMLPreElement>("#status")!;
+const olaylarEl = document.querySelector<HTMLUListElement>("#events")!;
 
 const kavsak = new KavsakArayuzu();
+const sahne = new KavsakSahnesi(canvas);
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
+document.querySelector("#add-vehicle")!.addEventListener("click", (e) => {
+  const btn = (e.target as HTMLElement).closest("button[data-dir]");
+  if (btn) kavsak.aracEkle(btn.getAttribute("data-dir") as Yon);
 });
 
-console.log("Trafik Işığı Simülasyonu");
-console.log("Komutlar: kuzey | guney | dogu | bati | durum | olay | tick | cikis");
-console.log("");
+let onceki = performance.now();
 
-function durumYaz(): void {
-  for (const satir of kavsak.durumSatirlari()) console.log(satir);
+function kare(simdi: number): void {
+  const dt = Math.min(0.05, (simdi - onceki) / 1000);
+  onceki = simdi;
+  kavsak.adim(dt);
+  sahne.senkronizeEt(kavsak);
+  sahne.ciz();
+
+  const s = kavsak.anlik();
+  const [a, b] = s.faz.split("-") as Yon[];
+  durumEl.textContent = [
+    `Faz: ${YON_ETIKET[a!]} – ${YON_ETIKET[b!]}`,
+    `Geçen: ${s.gecen}`,
+    "",
+    ...Object.entries(s.renkler).map(
+      ([d, c]) => `${YON_ETIKET[d as Yon]}: ${RENK_ETIKET[c as IsikRengi]} · kuyruk ${s.kuyruklar[d]}`,
+    ),
+  ].join("\n");
+
+  olaylarEl.innerHTML = s.olaylar
+    .slice(0, 12)
+    .map((e) => `<li>${e.mesaj}</li>`)
+    .join("");
+
+  requestAnimationFrame(kare);
 }
 
-function prompt(): void {
-  rl.question("> ", (satir) => {
-    const komut = satir.trim().toLowerCase();
-
-    if (komut === "cikis" || komut === "exit" || komut === "q") {
-      rl.close();
-      return;
-    }
-
-    if (kavsak.yonGecerli(komut)) {
-      kavsak.aracEkle(komut);
-      console.log(`${kavsak.yonEtiket(komut)} yönüne araç eklendi.`);
-      durumYaz();
-    } else if (komut === "durum") {
-      durumYaz();
-    } else if (komut === "olay") {
-      const olaylar = kavsak.olayMesajlari();
-      if (olaylar.length === 0) console.log("Henüz olay yok.");
-      else for (const mesaj of olaylar) console.log(`  ${mesaj}`);
-    } else if (komut === "tick" || komut === "") {
-      kavsak.ilerlet(10);
-      durumYaz();
-    } else {
-      console.log("Bilinmeyen komut. Örnek: kuzey, durum, olay, tick, cikis");
-    }
-
-    prompt();
-  });
-}
-
-durumYaz();
-prompt();
+requestAnimationFrame(kare);

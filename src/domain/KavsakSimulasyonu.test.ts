@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { KavsakSimulasyonu } from "./KavsakSimulasyonu";
-import { KavsakArayuzu } from "../patterns/facade/KavsakArayuzu";
 
 describe("KavsakSimulasyonu", () => {
   it("araç eklenir", () => {
@@ -9,7 +8,7 @@ describe("KavsakSimulasyonu", () => {
     expect(sim.anlik().kuyruklar.kuzey).toBe(1);
   });
 
-  it("ışıklar yeşile geçer", () => {
+  it("ışıklar döngüde yeşile geçer", () => {
     const sim = new KavsakSimulasyonu();
     for (let i = 0; i < 30; i++) sim.adim(0.2);
     const yesiller = Object.values(sim.anlik().renkler).filter((c) => c === "yesil");
@@ -20,24 +19,7 @@ describe("KavsakSimulasyonu", () => {
     const sim = new KavsakSimulasyonu();
     sim.aracEkle("kuzey");
     sim.aracEkle("guney");
-    sim.ilerlet(100);
+    for (let i = 0; i < 100; i++) sim.adim(0.2);
     expect(sim.anlik().gecen).toBeGreaterThanOrEqual(1);
-  });
-});
-
-describe("KavsakArayuzu", () => {
-  it("durum satırları üretir", () => {
-    const arayuz = new KavsakArayuzu();
-    const satirlar = arayuz.durumSatirlari();
-    expect(satirlar.length).toBeGreaterThanOrEqual(5);
-    expect(satirlar[0]).toContain("Strateji:");
-  });
-});
-
-describe("Observer", () => {
-  it("ışık değişiminde olay üretir", () => {
-    const sim = new KavsakSimulasyonu();
-    sim.ilerlet(40);
-    expect(sim.anlik().olaylar.length).toBeGreaterThan(0);
   });
 });

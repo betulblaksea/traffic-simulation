@@ -1,38 +1,28 @@
-# Trafik Işığı Simülasyonu
+# 3D Trafik Işığı Simülasyonu
 
-Dört yönlü kavşakta trafik ışığı ve araç kuyruklarını terminal üzerinden yöneten bir TypeScript simülasyonu.
-
-Araçlar fabrika ile üretilir. Kuyruk yoğunluğuna göre yeşil ışık süresi değişir. Her ışık kırmızı, sarı ve yeşil durumları arasında geçer. Işık değişimleri gözlemcilere bildirilir ve olay günlüğüne yazılır. Terminal yalnızca `KavsakArayuzu` üzerinden çalışır; ışıklar, kuyruklar, zamanlama ve olaylar bu arayüzün arkasında toplanır.
+TypeScript + Three.js ile dört yönlü kavşak simülasyonu. Araç ekle, ışıklar otomatik döner.
 
 ## Çalıştırma
 
 ```bash
 npm install
-npm start
+npm run dev
 ```
 
 ```bash
 npm test
 ```
 
-## Komutlar
+## Kalıplar
 
-| Komut | Açıklama |
-|--------|----------|
-| `kuzey` `guney` `dogu` `bati` | O yöne araç ekle |
-| `durum` | Işıklar, kuyruklar ve aktif strateji |
-| `olay` | Son ışık değişim olayları |
-| `tick` | Simülasyonu ilerlet |
-| `cikis` | Çık |
-
-## Yapı
-
-| Bölüm | Konum |
+| Kalıp | Konum |
 |--------|--------|
-| Simülasyon | `src/domain/` |
-| Zamanlama stratejileri | `src/patterns/strategy/` |
-| Olay günlüğü | `src/patterns/observer/` |
-| Kavşak arayüzü | `src/patterns/facade/` |
-| Işık durumları | `src/patterns/state/` |
-| Araç fabrikası | `src/patterns/factory/` |
-| Terminal arayüzü | `src/main.ts` |
+| Factory | `src/patterns/factory/` |
+| State | `src/patterns/state/` |
+| Strategy | `src/patterns/strategy/` |
+| Observer | `src/patterns/observer/` |
+| Facade | `src/patterns/facade/` |
+
+## 3D modeller
+
+`public/models/` klasöründe GLB dosyaları bulunur.

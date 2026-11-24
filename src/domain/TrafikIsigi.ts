@@ -1,6 +1,7 @@
 import type { IsikGozlemcisi } from "../patterns/observer/IsikGozlemcisi";
 import type { IsikDurumu } from "../patterns/state/IsikDurumu";
 import { KirmiziDurum } from "../patterns/state/KirmiziDurum";
+import type { ZamanlamaStratejisi } from "../patterns/strategy/ZamanlamaStratejisi";
 import type { IsikRengi } from "./IsikRengi";
 import type { Yon } from "./Yon";
 
@@ -11,10 +12,12 @@ export class TrafikIsigi {
 
   yesileIzin = false;
   zamanlayici = 1;
-  yesilSuresi = 7;
-  sariSuresi = 2;
+  kuyrukBoyutu = 0;
 
-  constructor(readonly yon: Yon) {}
+  constructor(
+    readonly yon: Yon,
+    public zamanlama: ZamanlamaStratejisi,
+  ) {}
 
   get renk(): IsikRengi {
     return this.durum.renk;
@@ -27,9 +30,14 @@ export class TrafikIsigi {
   durumDegistir(sonraki: IsikDurumu): void {
     const onceki = this.durum.renk;
     this.durum = sonraki;
-    if (sonraki.renk === "yesil") this.zamanlayici = this.yesilSuresi;
-    else if (sonraki.renk === "sari") this.zamanlayici = this.sariSuresi;
-    else this.zamanlayici = this.yesileIzin ? 1 : 999;
+    this.zamanlayici =
+      sonraki.renk === "yesil"
+        ? this.zamanlama.yesilSuresi(this.kuyrukBoyutu)
+        : sonraki.renk === "sari"
+          ? this.zamanlama.sariSuresi()
+          : this.yesileIzin
+            ? 1
+            : 999;
     for (const g of this.gozlemciler) g.isikDegisti(this.yon, onceki, sonraki.renk, this.zaman);
   }
 
